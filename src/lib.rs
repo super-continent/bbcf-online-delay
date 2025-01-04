@@ -32,6 +32,8 @@ unsafe fn init() {
         );
     }));
 
+    simple_log::file("./bbcf_online_delay.log", "trace", 200, 10).expect("Couldn't initialize logging");
+
     const CONFIG_FILENAME: &str = "./BBCF_ONLINE_FRAME_DELAY.txt";
 
     ONLINE_DELAY = std::fs::File::open(CONFIG_FILENAME)
@@ -62,7 +64,8 @@ unsafe fn init() {
         .expect("Couldn't enable SetDelay hook");
 }
 
-fn delay_hook(ggpo: *mut u8, handle: *mut u8, _delay: usize) -> usize {
+fn delay_hook(ggpo: *mut u8, handle: *mut u8, delay: usize) -> usize {
+    simple_log::log::debug!("handle: {:X}, original_delay: {}", handle as usize, delay);
     unsafe { SetDelay.call(ggpo, handle, ONLINE_DELAY) }
 }
 
